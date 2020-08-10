@@ -17,8 +17,23 @@ from decimal import Decimal
 import math
 
 README_CONTENT_CHECK_FOR = [
-    '__init__'
-]
+    '__init__',
+    '__and__',
+    '__or__',
+    '__repr__',
+    '__str__',
+    '__add__',
+    '__eq__',
+    '__float__',
+    '__ge__',
+    '__gt__',
+    '__invertsign__',
+    '__le__',
+    '__lt__',
+    '__mul__',
+    '__sqrt__',
+    '__bool__'
+    ]
 
 MANDATORY_FUNCTIONS = [
     '__init__',
@@ -39,41 +54,19 @@ MANDATORY_FUNCTIONS = [
     '__bool__'
 ]
 
-
-CHECK_FOR_THINGS_NOT_ALLOWED = [
-    'xyz123#$$'
-]
-
 def test_readme_exists():
     assert os.path.isfile("README.md"), "README.md file missing!"
 
-def test_readme_contents():
-    readme = open("README.md", "r")
-    readme_words = readme.read().split()
-    readme.close()
-    assert len(readme_words) >= 500, "Make your README.md file interesting! Add atleast 500 words"
-
-def test_readme_proper_description():
-    READMELOOKSGOOD = True
-    f = open("README.md", "r")
-    content = f.read()
-    f.close()
-    for c in README_CONTENT_CHECK_FOR:
-        if c not in content:
-            READMELOOKSGOOD = False
-            pass
-    assert READMELOOKSGOOD == True, "You have not described all the functions/class well in your README.md file"
-
 def test_mandatory_fuctions_availability():
-    MANDATORY_FUNCTIONs_availability = True
+    MANDATORY_FUNCTIONS_AVAILABILITY = True
     f = open("session4.py", "r")
     content = f.read()
     f.close()
     for c in README_CONTENT_CHECK_FOR:
         if c not in content:
-            MANDATORY_FUNCTIONs_availability = False
+            MANDATORY_FUNCTIONS_AVAILABILITY = False
             pass
-    assert MANDATORY_FUNCTIONs_availability == True, "You have not described all the functions/class well in your README.md file"
+    assert MANDATORY_FUNCTIONS_AVAILABILITY == True, "You have not described all the functions/class well in your README.md file"
 
 
 def test_readme_file_for_formatting():
@@ -137,7 +130,7 @@ def test_sqrt():
     sqrt = q.__sqrt__()
     print ("sqrt " + str(sqrt))
     print(" isinstance(sqrt, complex) " + str(isinstance(sqrt, complex)))
-    res = (isinstance(sqrt, complex) or (not bool(q)) or sqrt == Decimal(str(q)).sqrt())
+    res = (isinstance(sqrt, complex) or (not bool(sqrt)) or sqrt == Decimal(str(q)).sqrt())
     assert res, "Square root does not match"
 
 def test_and_short_circuit():
@@ -154,13 +147,74 @@ def test_and_short_circuit():
 def test_or_short_circuit():
     q1 = Qualean(random.choice(PERMITTED_INPUT_SET))
     q2 = None
-    res = (bool(q1 or q2) == True)
+    res = bool(q1) != False or (bool(q1 or q2) == True)
     assert res, "OR Short circuit fail, condition 1 for" + str(q1)+ " and " + str(q2)
     
-    q1 = Qualean(1)
+    q1 = Qualean(1) # q1 can still become false as it is random(-1,1)
     q2 = Qualean(random.choice(PERMITTED_INPUT_SET))
-    res = (bool(q1 or q2) == True)
+    res = bool(q1) != False or (bool(q1 or q2) == True)
     assert res, "OR Short circuit fail, condition 2 for" + str(q1)+ " and " + str(q2)
+
+def test_and():
+    q1 = Qualean(1)
+    q2 = Qualean(0)
+    q3 = Qualean(-1)
+    assert bool(q1 and q2) == False, "Test and failed"
+    assert bool(q3 and q2) == False, "Test and failed"
+    assert bool(q1 and q1) == True, "Test and failed"
+    assert bool(q2 and q2) == False, "Test and failed"
+    assert bool(q1 and q3) == True, "Test and failed"
+
+def test_or():
+    q1 = Qualean(1)
+    q2 = Qualean(0)
+    q3 = Qualean(-1)
+    assert bool(q1 or q2) == True, "Test and failed"
+    assert bool(q3 or q2) == True, "Test and failed"
+    assert bool(q1 or q1) == True, "Test and failed"
+    assert bool(q1 or q3) == True, "Test and failed"
+    assert bool(q2 and q2) == False, "Test and failed"
+
+
+def test_repr():
+    r = Qualean(0)
+    assert r.__repr__().startswith('Qualean state='), 'The representation of Qualean object does not meet expectations'
+
+def test_bool():
+    assert bool(Qualean(0)) == False, "Test bool failed"
+
+def test_eq():
+    q1 = Qualean(random.choice(PERMITTED_INPUT_SET))
+    q2 = Qualean(random.choice(PERMITTED_INPUT_SET))
+    assert q1 != q2,  "Test eq failed"
+    q1 = Qualean(0)
+    q2 = Qualean(0)
+    assert q1 == q2,  "Test eq failed"
+
+def test_gt():
+    q1 = Qualean(0)
+    assert bool(1 > q1) == True, "Test gt fail" 
+
+def test_ge():
+    q1 = Qualean(0)
+    assert bool(1 >= q1) == True, "Test ge fail" 
+    assert bool(0 >= q1) == True, "Test ge fail" 
+    
+def test_lt():
+    q1 = Qualean(0)
+    assert bool(q1 < 4) == True, "Test lt fail" 
+
+def test_le():
+    q1 = Qualean(0)
+    assert bool(q1 <= 1) == True, "Test le fail" 
+    assert bool(q1 <= 0) == True, "Test le fail" 
+
+def test_invertsign():
+    q2 = Qualean(1)
+    is_neg = q2<0
+    q2.__invertsign__()
+    is_neg_new = q2<0
+    assert is_neg != is_neg_new, "invertsign fail"
 
 def test_sum_million_equals_zero():
     sum = Qualean(0)
@@ -168,3 +222,4 @@ def test_sum_million_equals_zero():
         sum = sum + Qualean(random.choice(PERMITTED_INPUT_SET))
     print("sum " + str(sum))
     assert math.isclose(float(sum), 0, rel_tol = 1e+02), "Sum is not zero"
+    

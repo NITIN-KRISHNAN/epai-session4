@@ -24,7 +24,7 @@ class Qualean:
             self.i_state = int(val) * self.get_random_number()
 
     def __repr__(self):
-        return  str(self.i_state)
+        return  "Qualean state="+str(self.i_state)
 
     def __str__(self):
         return str(self.i_state)
@@ -95,23 +95,3 @@ class Qualean:
 
     def is_negative(self):
         return self.i_state < 0
-
-def test_sum_million_equals_zero():
-    sum = Decimal(0)
-    for i in range(1000000):
-        sum = Qualean(random.choice(PERMITTED_INPUT_SET))
-    print("sum " + str(sum))
-    print(math.isclose(float(sum), 0, rel_tol = 1e-01))
-    print(math.isclose(float(sum), 0))
-
-
-def test_sum_equals_product():
-    for i in PERMITTED_INPUT_SET:
-        q = Qualean(i)
-        product = 100 * q
-        sum = 0
-        for i in range(100):
-            sum += q
-        print("sum " +  str(sum))
-        print("product " + str(product))
-        print( product == sum)# "Sum is not equal to product for " + str(q)
