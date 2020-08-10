@@ -19,12 +19,15 @@ class Qualean:
         elif val not in PERMITTED_INPUT_SET:
             raise ValueError("Invalid Input - should be one of permitted values ", PERMITTED_INPUT_SET)
         else:
-            # TODO this might not be required
-            getcontext().rounding = ROUND_HALF_EVEN
-            self.i_state = int(val) * self.get_random_number()
+            if(val == 0):
+                self.i_state = Decimal(0)
+            else:
+                # TODO this might not be required
+                getcontext().rounding = ROUND_HALF_EVEN
+                self.i_state = int(val) * self.get_random_number()
 
     def __repr__(self):
-        return  "Qualean state="+str(self.i_state)
+        return  '{qualean_imaginary_state:'+ str(self.i_state)+'}'
 
     def __str__(self):
         return str(self.i_state)
